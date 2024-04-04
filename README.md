@@ -1,0 +1,1 @@
+# Rozpoznawanie stylu architektonicznego budynków
