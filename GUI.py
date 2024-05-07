@@ -18,7 +18,7 @@ class MyWidget(QtWidgets.QWidget):
 
         self.inputButton.setFixedSize(500, 500)
         self.inputButton.setIconSize(QtCore.QSize(400, 400))
-        self.inputButton.setIcon(QtGui.QIcon("./jpg.png"))
+        self.inputButton.setIcon(QtGui.QIcon("./image.png"))
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.text)
