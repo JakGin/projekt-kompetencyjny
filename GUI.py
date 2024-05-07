@@ -11,16 +11,18 @@ class MyWidget(QtWidgets.QWidget):
         super().__init__()
         self.filename = ""
 
-        self.inputButton = QtWidgets.QPushButton("Input image")
+        self.inputButton = QtWidgets.QPushButton("")
         self.analyzeButton = QtWidgets.QPushButton("Analyze image.")
         self.text = QtWidgets.QLabel("Input image to analyze.", alignment=QtCore.Qt.AlignCenter)
-        self.imageLabel = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
         self.pixmap = QtGui.QPixmap()
 
+        self.inputButton.setFixedSize(500, 500)
+        self.inputButton.setIconSize(QtCore.QSize(400, 400))
+        self.inputButton.setIcon(QtGui.QIcon("./jpg.png"))
+
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.imageLabel)
         self.layout.addWidget(self.text)
-        self.layout.addWidget(self.inputButton)
+        self.layout.addWidget(self.inputButton, alignment=QtCore.Qt.AlignCenter)
         self.layout.addWidget(self.analyzeButton)
 
         self.inputButton.clicked.connect(self.browse_files)
@@ -47,7 +49,7 @@ class MyWidget(QtWidgets.QWidget):
         temp_img.save(img_byte_arr, format=allowed_format[0])
         img_byte_arr.seek(0)
         self.pixmap.loadFromData(img_byte_arr.read())
-        self.imageLabel.setPixmap(self.pixmap)
+        self.inputButton.setIcon(QtGui.QIcon(self.pixmap))
         self.img.save(self.save_path + "/" + self.filename.split('/')[-1])
 
 
@@ -55,6 +57,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 
     widget = MyWidget()
+    widget.setStyleSheet('font-size: 30px')
     widget.resize(800, 600)
     widget.show()
 
