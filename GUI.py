@@ -2,6 +2,7 @@ import sys
 from PIL import Image
 import io
 from PySide6 import QtCore, QtWidgets, QtGui
+import cnn_to_app as cnn
 
 
 class MyWidget(QtWidgets.QWidget):
@@ -31,6 +32,8 @@ class MyWidget(QtWidgets.QWidget):
     @QtCore.Slot()
     def analyze_image(self):
         self.text.setText("Analyzing image.")
+        class_name, score = cnn.classify_image(self.filename)
+        self.text.setText("{}".format(class_name))
 
     def browse_files(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, caption="Select Image", dir="C:\\Users\\User\\Desktop\\")
