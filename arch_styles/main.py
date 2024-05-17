@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
 BATCH_SIZE = 128
-IMG_WIDTH = 256
-IMG_HEIGHT = 256
+IMG_WIDTH = 128
+IMG_HEIGHT = 128
 IMG_CHANNELS = 1  # Single channel for grayscale images
 TEST_SIZE = 0.2
 STYLES_EXCLUSION = ["Novelty architecture"]
@@ -54,7 +54,7 @@ def load_data(data_dir: str):
     images = []
     labels = []
     folder_names = os.listdir(data_dir)
-    for folder_name in folder_names[:4]:
+    for folder_name in folder_names:
         if folder_name in STYLES_EXCLUSION:
             continue
         path = os.path.join(data_dir, folder_name)
@@ -73,7 +73,7 @@ def load_data(data_dir: str):
 def get_model(num_categories: int):
     """
     Returns a compiled convolutional neural network model. Assume that the
-    `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
+    `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 1)`.
     The output layer should have `num_categories` units, one for each category.
     """
     model = tf.keras.models.Sequential(
@@ -107,6 +107,8 @@ def get_model(num_categories: int):
 
 if __name__ == "__main__":
     main()
+
+    # For look at images
     # images, labels = load_data(sys.argv[1])
     # img = images[0]
     # print(img.shape, labels[0])
