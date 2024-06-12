@@ -18,11 +18,14 @@ TEST_SIZE = 0.2
 MAIN_STYLES_EXCLUSION = []
 SUB_STYLES_EXCLUSION = ["Novelty architecture"]
 
+#Change to False when you want to load and evaluate already trained model
+TRAIN_MODEL = True
+
 
 def main():
     # Check command-line arguments
     if len(sys.argv) not in [2, 3]:
-        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.h5]")
+        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.keras]")
 
     # Get image arrays, main labels and sub_labels for all image files
     images, labels, sub_labels = load_data(sys.argv[1])
@@ -42,15 +45,21 @@ def main():
     # Get a compiled neural network
     model = get_model(len(set(sub_labels)))
 
-    # Fit model on training data
-    model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+    if len(sys.argv) == 3:
+        filename = sys.argv[2]
 
-    # Evaluate neural network performance
-    model.evaluate(x_test, y_test, verbose=2)
+
+    if TRAIN_MODEL:
+        # Fit model on training data
+        model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+    else:
+        #Load model
+        tf.keras.models.load_model(filename)
+        # Evaluate neural network performance
+        model.evaluate(x_test, y_test, verbose=2)
 
     # Save model to file
     if len(sys.argv) == 3:
-        filename = sys.argv[2]
         model.save(filename)
         print(f"Model saved to {filename}.")
 
