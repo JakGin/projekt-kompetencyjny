@@ -13,7 +13,7 @@ class CustomDialog(QtWidgets.QDialog):
 
         self.setWindowTitle("HELLO!")
         self.resize(150, 100)
-        self.setStyleSheet("font-size: 30px")
+        self.setStyleSheet("font-size: 25px")
         QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
 
         self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
@@ -58,7 +58,7 @@ class MyWidget(QtWidgets.QWidget):
   cursor: pointer;
   display: inline-block;
   font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
-  font-size: 15px;
+  font-size: 30px;
   font-weight: 500;
   height: 50px;
   letter-spacing: normal;
@@ -108,7 +108,7 @@ QPushButton:active {
   cursor: pointer;
   display: inline-block;
   font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
-  font-size: 15px;
+  font-size: 30px;
   font-weight: 500;
   height: 50px;
   letter-spacing: normal;
