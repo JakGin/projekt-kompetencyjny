@@ -3,6 +3,7 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
+import shutil
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
@@ -29,14 +30,17 @@ def main():
 
     # Split data into training and testing sets
     labels_encoder = OneHotEncoder(sparse_output=False)
-    encoded_labels = labels_encoder.fit_transform(np.array(labels).reshape(-1, 1))
+    encoded_labels = labels_encoder.fit_transform(np.array(sub_labels).reshape(-1, 1))
 
     x_train, x_test, y_train, y_test = train_test_split(
         np.array(images), np.array(encoded_labels), test_size=TEST_SIZE
     )
 
+    # Generate a test dataset that appears in the folder from where you ran the script
+    generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset")
+
     # Get a compiled neural network
-    model = get_model(len(set(labels)))
+    model = get_model(len(set(sub_labels)))
 
     # Fit model on training data
     model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
@@ -98,6 +102,37 @@ def load_data(data_dir: str):
                 sub_labels.append(sub_style)
         print(f"{main_style} loaded")
     return images, labels, sub_labels
+
+
+def generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset"):
+    """Creates folder like structure of images that are used for testing (those that network is not using for learning).
+    The structure looks like:
+    -base_dir_name
+        *folder_name
+        *folder_name
+        *...
+    It generates only the leaf folders so if you use dataset with 9 folders that have subfolders there will be only the subfolders generated exactly in the base_dir
+    The created images are already processed so they match the images that CNN gets, so for example they are resized to 128x128 and have 1 channel"""
+    # Decode the one-hot encoded labels
+    decoded_labels_test = labels_encoder.inverse_transform(y_test)
+    
+    # Create the "test_dataset" folder, overriding if it exists
+    if os.path.exists(base_dir):
+        shutil.rmtree(base_dir)
+    os.makedirs(base_dir)
+    
+    # Create subfolders and save images
+    for idx, label in enumerate(decoded_labels_test):
+        label_name = label[0]  # Get the label name from the array
+        label_dir = os.path.join(base_dir, label_name)
+        
+        if not os.path.exists(label_dir):
+            os.makedirs(label_dir)
+        
+        # Convert the image data to a format suitable for cv2 and save it
+        image_array = x_test[idx]
+        image_path = os.path.join(label_dir, f"image_{idx}.png")
+        cv2.imwrite(image_path, image_array)
 
 
 def get_model(num_categories: int):
