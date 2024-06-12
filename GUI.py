@@ -4,69 +4,91 @@ import io
 from PySide6 import QtCore, QtWidgets, QtGui
 #import cnn_to_app as cnn
 
+# kolorystyka Aplle (Mac)
+
+
+class CustomDialog(QtWidgets.QDialog):
+    def __init__(self, text: str = "Test"):
+        super().__init__()
+
+        self.setWindowTitle("HELLO!")
+        self.resize(150, 100)
+        self.setStyleSheet("font-size: 30px")
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = QtWidgets.QLabel(text)
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Analyze architecture style")
         self.save_path = "./image"
         self.img = None
         self.filename = ""
         self.setStyleSheet("""
                     QWidget {
-                        background-color: #BDBCBF; /* Light grey */
+                        background-color: #FFFFFF; /* Light grey */
                         padding: 15px; /* Padding inside the widget */
                     }
                     QLabel {
                         color: black; /* Dark grey text color */
                         font-size: 30px;
                     }
-                    QPushButton {
-                        align-items: center;
-  appearance: none;
-  background-color: #DEDEDE;
-  border-radius: 24px;
-  border-style: none;
-  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
-  box-sizing: border-box;
-  color: #3c4043;
-  cursor: pointer;
-  display: inline-flex;
-  fill: currentcolor;
-  font-family: "Google Sans",Roboto,Arial,sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  justify-content: center;
-  letter-spacing: .25px;
-  line-height: normal;
-  overflow: visible;
-  padding: 2px 24px;
-  position: relative;
-  text-align: center;
-  text-transform: none;
-  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  will-change: transform,opacity;
-  z-index: 0;
-                    }
-                    QPushButton:hover {
-                        background: #F6F9FE;
-  color: #174ea6;
-                    }
-                QPushButton:active {
-                box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
-  outline: none;
-                }
                 """)
         self.inputButton = QtWidgets.QPushButton("")
         self.analyzeButton = QtWidgets.QPushButton("Analyze image.")
         self.analyzeButton.setStyleSheet("""
         QPushButton {
-            position: absolute;
-            width: 750px;
-            height: 70px;
-        }
+                        appearance: none;
+  backface-visibility: hidden;
+  background-color: #038DC8;
+  border-radius: 10px;
+  border-style: none;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  height: 50px;
+  letter-spacing: normal;
+  line-height: 1.5;
+  outline: none;
+  overflow: hidden;
+  padding: 14px 30px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transform: translate3d(0, 0, 0);
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+                    }
+            QPushButton:hover {
+  background-color: #69C7F1;
+  box-shadow: rgba(0, 0, 0, .05) 0 5px 30px, rgba(0, 0, 0, .05) 0 1px 4px;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: .35s;
+}
+QPushButton:active {
+  box-shadow: rgba(0, 0, 0, .1) 0 3px 6px 0, rgba(0, 0, 0, .1) 0 0 10px 0, rgba(0, 0, 0, .1) 0 1px 4px -1px;
+  transform: translateY(2px);
+  transition-duration: .35s;
+}
         """)
         self.text = QtWidgets.QLabel("Input image to analyze.", alignment=QtCore.Qt.AlignCenter)
         self.pixmap = QtGui.QPixmap()
@@ -75,10 +97,48 @@ class MyWidget(QtWidgets.QWidget):
         self.inputButton.setIconSize(QtCore.QSize(400, 400))
         self.inputButton.setStyleSheet(("""
             QPushButton {
-                position: absolute;
-                width: 500px;
-                height: 500px;
-            }
+                        appearance: none;
+  backface-visibility: hidden;
+  background-color: #038DC8;
+  border-radius: 10px;
+  border-style: none;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  height: 50px;
+  letter-spacing: normal;
+  line-height: 1.5;
+  outline: none;
+  overflow: hidden;
+  padding: 14px 30px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transform: translate3d(0, 0, 0);
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: top;
+  white-space: nowrap;
+                    }
+            QPushButton:hover {
+  background-color: #69C7F1;
+  box-shadow: rgba(0, 0, 0, .05) 0 5px 30px, rgba(0, 0, 0, .05) 0 1px 4px;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: .35s;
+}
+QPushButton:active {
+  box-shadow: rgba(0, 0, 0, .1) 0 3px 6px 0, rgba(0, 0, 0, .1) 0 0 10px 0, rgba(0, 0, 0, .1) 0 1px 4px -1px;
+  transform: translateY(2px);
+  transition-duration: .35s;
+}
         """))
         self.inputButton.setIcon(QtGui.QIcon("./image.png"))
 
@@ -93,6 +153,9 @@ class MyWidget(QtWidgets.QWidget):
     @QtCore.Slot()
     def analyze_image(self):
         self.text.setText("Analyzing image.")
+        dlg = CustomDialog()
+        if dlg.exec():
+            print("Success!")
         #class_name, score = cnn.classify_image(self.filename)
         #self.text.setText("{}".format(class_name))
 
