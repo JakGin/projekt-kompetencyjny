@@ -7,9 +7,11 @@ import shutil
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+from image_transformation import apply_fourier_transform, apply_wavelet_transform
+import models
 
 
-EPOCHS = 10
+EPOCHS = 50
 BATCH_SIZE = 128
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
@@ -43,7 +45,7 @@ def main():
     generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset")
 
     # Get a compiled neural network
-    model = get_model(len(set(sub_labels)))
+    model, lr_schedule = get_model(len(set(sub_labels)))
 
     if len(sys.argv) == 3:
         filename = sys.argv[2]
@@ -51,7 +53,7 @@ def main():
 
     if TRAIN_MODEL:
         # Fit model on training data
-        model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+        model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE, callbacks = [lr_schedule])
     else:
         #Load model
         tf.keras.models.load_model(filename)
@@ -106,9 +108,20 @@ def load_data(data_dir: str):
                     continue
                 img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
+                #fourier_img = apply_fourier_transform(img)
+                #wavelet_img = apply_wavelet_transform(img)
+
                 images.append(img)
+                #images.append(fourier_img)
+                #images.append(wavelet_img)
+                #labels.extend([main_style] * 3)
+                #sub_labels.extend([sub_style] * 3)
+                
                 labels.append(main_style)
                 sub_labels.append(sub_style)
+
         print(f"{main_style} loaded")
     return images, labels, sub_labels
 
@@ -150,31 +163,7 @@ def get_model(num_categories: int):
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)`.
     The output layer should have `num_categories` units, one for each category.
     """
-    model = tf.keras.models.Sequential(
-        [
-            tf.keras.layers.Conv2D(
-                64,
-                (2, 2),
-                activation="relu",
-                input_shape=(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS),
-            ),
-            tf.keras.layers.Conv2D(64, (2, 2), activation="relu"),
-            tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-            tf.keras.layers.Conv2D(64, (2, 2), activation="relu"),
-            tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(256, activation="relu"),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(num_categories, activation="softmax"),
-        ]
-    )
-
-    model.compile(
-        optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
-    )
-
-    return model
+    return models.get_model_Adam_256(num_categories)
 
 
 if __name__ == "__main__":
