@@ -15,7 +15,7 @@ EPOCHS = 50
 BATCH_SIZE = 128
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
-IMG_CHANNELS = 1  # Single channel for grayscale images
+IMG_CHANNELS = 3  # Single channel for grayscale images
 TEST_SIZE = 0.2
 MAIN_STYLES_EXCLUSION = []
 SUB_STYLES_EXCLUSION = ["Novelty architecture"]
@@ -45,7 +45,7 @@ def main():
     generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset")
 
     # Get a compiled neural network
-    model, lr_schedule = get_model(len(set(sub_labels)))
+    model = get_model(len(set(sub_labels)))
 
     if len(sys.argv) == 3:
         filename = sys.argv[2]
@@ -53,7 +53,7 @@ def main():
 
     if TRAIN_MODEL:
         # Fit model on training data
-        model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE, callbacks = [lr_schedule])
+        model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
     else:
         #Load model
         tf.keras.models.load_model(filename)
@@ -107,7 +107,7 @@ def load_data(data_dir: str):
                     # Ignore image if it is corrupted
                     continue
                 img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
                 #fourier_img = apply_fourier_transform(img)
@@ -163,7 +163,7 @@ def get_model(num_categories: int):
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)`.
     The output layer should have `num_categories` units, one for each category.
     """
-    return models.get_model_Adam_256(num_categories)
+    return models.get_pretrained_model(num_categories)
 
 
 if __name__ == "__main__":
