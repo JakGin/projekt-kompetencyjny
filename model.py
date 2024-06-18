@@ -11,7 +11,7 @@ from image_transformation import apply_fourier_transform, apply_wavelet_transfor
 import models
 
 
-EPOCHS = 50
+EPOCHS = 100
 BATCH_SIZE = 128
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
