@@ -27,7 +27,7 @@ TRAIN_MODEL = True
 def main():
     # Check command-line arguments
     if len(sys.argv) not in [2, 3]:
-        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.keras]")
+        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.weights.h5]")
 
     # Get image arrays, main labels and sub_labels for all image files
     images, labels, sub_labels = load_data(sys.argv[1])
@@ -37,12 +37,10 @@ def main():
     labels_encoder = OneHotEncoder(sparse_output=False)
     encoded_labels = labels_encoder.fit_transform(np.array(sub_labels).reshape(-1, 1))
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        np.array(images), np.array(encoded_labels), test_size=TEST_SIZE
-    )
-
-    # Generate a test dataset that appears in the folder from where you ran the script
-    generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset")
+    if True:
+        x_train, x_test, y_train, y_test = train_test_split(
+            np.array(images), np.array(encoded_labels), test_size=TEST_SIZE
+        )
 
     # Get a compiled neural network
     model = get_model(len(set(sub_labels)))
@@ -52,18 +50,24 @@ def main():
 
 
     if TRAIN_MODEL:
+        # Generate a test dataset that appears in the folder from where you ran the script
+        generate_test_dataset(x_test, y_test, labels_encoder, base_dir="test_dataset")
+
         # Fit model on training data
         model.fit(x_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+        
+        # Save model to file
+        if len(sys.argv) == 3:
+            model.save_weights(filename)
+            print(f"Model saved to {filename}.")
     else:
         #Load model
-        tf.keras.models.load_model(filename)
+        model.fit(x_train, y_train, epochs=1, batch_size=BATCH_SIZE)
+        model.load_weights(filename, skip_mismatch=False)
         # Evaluate neural network performance
         model.evaluate(x_test, y_test, verbose=2)
 
-    # Save model to file
-    if len(sys.argv) == 3:
-        model.save(filename)
-        print(f"Model saved to {filename}.")
+
 
 
 def load_data2(data_dir: str):
@@ -107,7 +111,8 @@ def load_data(data_dir: str):
                     # Ignore image if it is corrupted
                     continue
                 img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
-                #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                if IMG_CHANNELS == 1:
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
                 #fourier_img = apply_fourier_transform(img)
