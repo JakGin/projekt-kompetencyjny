@@ -21,7 +21,7 @@ MAIN_STYLES_EXCLUSION = []
 SUB_STYLES_EXCLUSION = ["Novelty architecture"]
 
 #Change to False when you want to load and evaluate already trained model
-TRAIN_MODEL = True
+TRAIN_MODEL = False
 
 
 def main():
@@ -37,10 +37,13 @@ def main():
     labels_encoder = OneHotEncoder(sparse_output=False)
     encoded_labels = labels_encoder.fit_transform(np.array(sub_labels).reshape(-1, 1))
 
-    if True:
+    if TRAIN_MODEL:
         x_train, x_test, y_train, y_test = train_test_split(
             np.array(images), np.array(encoded_labels), test_size=TEST_SIZE
         )
+    else:
+        x_test = np.array(images)
+        y_test = np.array(encoded_labels)
 
     # Get a compiled neural network
     model = get_model(len(set(sub_labels)))
@@ -62,7 +65,7 @@ def main():
             print(f"Model saved to {filename}.")
     else:
         #Load model
-        model.fit(x_train, y_train, epochs=1, batch_size=BATCH_SIZE)
+        model.predict(np.ones((32, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)))
         model.load_weights(filename, skip_mismatch=False)
         # Evaluate neural network performance
         model.evaluate(x_test, y_test, verbose=2)
