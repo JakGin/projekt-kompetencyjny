@@ -4,7 +4,8 @@ import os
 import sys
 import tensorflow as tf
 import shutil
-
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from image_transformation import apply_fourier_transform, apply_wavelet_transform
@@ -26,31 +27,28 @@ TRAIN_MODEL = False
 
 def main():
     # Check command-line arguments
-    if len(sys.argv) not in [2, 3]:
-        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.weights.h5]")
 
     # Get image arrays, main labels and sub_labels for all image files
-    images, labels, sub_labels = load_data(sys.argv[1])
+    images, labels, sub_labels = load_data("D:\Studia\semestr6\ProjektKompetencyjny\ArchitectureStyles\ArchitectureStylesBase")
     print(f"Loaded {len(set(labels))} main styles - {len(images)} images")
-
+    print(sub_labels[::10])
+    print(sub_labels.__len__)
     # Split data into training and testing sets
     labels_encoder = OneHotEncoder(sparse_output=False)
     encoded_labels = labels_encoder.fit_transform(np.array(sub_labels).reshape(-1, 1))
 
-    if TRAIN_MODEL:
+    if True:
         x_train, x_test, y_train, y_test = train_test_split(
             np.array(images), np.array(encoded_labels), test_size=TEST_SIZE
         )
-    else:
-        x_test = np.array(images)
-        y_test = np.array(encoded_labels)
 
     # Get a compiled neural network
     model = get_model(len(set(sub_labels)))
-
+    print(len(sys.argv))
+    print(sys.argv[1])
+    print(sys.argv[2])
     if len(sys.argv) == 3:
         filename = sys.argv[2]
-
 
     if TRAIN_MODEL:
         # Generate a test dataset that appears in the folder from where you ran the script
@@ -65,12 +63,20 @@ def main():
             print(f"Model saved to {filename}.")
     else:
         #Load model
+        # tu do rysowania
         model.predict(np.ones((32, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)))
         model.load_weights(filename, skip_mismatch=False)
         # Evaluate neural network performance
         model.evaluate(x_test, y_test, verbose=2)
-
-
+        y_prediction = model.predict(x_test)
+        y_prediction = np.argmax(y_prediction, axis=1)
+        y_test = np.argmax(y_test, axis=1)
+        # Create confusion matrix and normalizes it over predicted (columns)
+        result = confusion_matrix(y_test, y_prediction, normalize='pred')
+        disp = ConfusionMatrixDisplay(confusion_matrix=result, display_labels=sub_labels)
+        plt.figure(figsize=(40, 50))
+        disp.plot()
+        plt.show()
 
 
 def load_data2(data_dir: str):
