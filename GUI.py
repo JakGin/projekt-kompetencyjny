@@ -169,7 +169,7 @@ QPushButton:active {
         self.save_image()
 
     def save_image(self):
-        self.text.setText("Image inputted.")
+        self.text.setText("Image loaded.")
         allowed_format = ["png", "jpg", "jpeg"]
         if self.filename.split('/')[-1].split('.')[-1] not in allowed_format:
             return None
