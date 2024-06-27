@@ -94,7 +94,7 @@ background-color: #909090;
 }
         """)
         self.analyzeButton.setDisabled(True)
-        self.text = QtWidgets.QLabel("Input image to analyze.", alignment=QtCore.Qt.AlignCenter)
+        self.text = QtWidgets.QLabel("Load image to analyze.", alignment=QtCore.Qt.AlignCenter)
         self.pixmap = QtGui.QPixmap()
 
         self.inputButton.setFixedSize(500, 500)
