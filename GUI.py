@@ -44,7 +44,7 @@ class MyWidget(QtWidgets.QWidget):
                     }
                 """)
         self.inputButton = QtWidgets.QPushButton("")
-        self.analyzeButton = QtWidgets.QPushButton("Analyze image.")
+        self.analyzeButton = QtWidgets.QPushButton("Analyze image")
         self.analyzeButton.setStyleSheet("""
         QPushButton {
                         appearance: none;
@@ -94,7 +94,7 @@ background-color: #909090;
 }
         """)
         self.analyzeButton.setDisabled(True)
-        self.text = QtWidgets.QLabel("Load image to analyze.", alignment=QtCore.Qt.AlignCenter)
+        self.text = QtWidgets.QLabel("Select image to analyze", alignment=QtCore.Qt.AlignCenter)
         self.pixmap = QtGui.QPixmap()
 
         self.inputButton.setFixedSize(500, 500)
@@ -156,7 +156,7 @@ QPushButton:active {
 
     @QtCore.Slot()
     def analyze_image(self):
-        self.text.setText("Analyzing image.")
+        self.text.setText("Analyzing image")
         #dlg = CustomDialog()
         #if dlg.exec():
         #    print("Success!")
@@ -169,7 +169,7 @@ QPushButton:active {
         self.save_image()
 
     def save_image(self):
-        self.text.setText("Image loaded.")
+        self.text.setText("Image loaded")
         allowed_format = ["png", "jpg", "jpeg"]
         if self.filename.split('/')[-1].split('.')[-1] not in allowed_format:
             return None
