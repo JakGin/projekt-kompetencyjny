@@ -89,7 +89,11 @@ QPushButton:active {
   transform: translateY(2px);
   transition-duration: .35s;
 }
+QPushButton:disabled {
+background-color: #909090;
+}
         """)
+        self.analyzeButton.setDisabled(True)
         self.text = QtWidgets.QLabel("Input image to analyze.", alignment=QtCore.Qt.AlignCenter)
         self.pixmap = QtGui.QPixmap()
 
@@ -153,9 +157,9 @@ QPushButton:active {
     @QtCore.Slot()
     def analyze_image(self):
         self.text.setText("Analyzing image.")
-        dlg = CustomDialog()
-        if dlg.exec():
-            print("Success!")
+        #dlg = CustomDialog()
+        #if dlg.exec():
+        #    print("Success!")
         #class_name, score = cnn.classify_image(self.filename)
         #self.text.setText("{}".format(class_name))
 
@@ -177,6 +181,7 @@ QPushButton:active {
         img_byte_arr.seek(0)
         self.pixmap.loadFromData(img_byte_arr.read())
         self.inputButton.setIcon(QtGui.QIcon(self.pixmap))
+        self.analyzeButton.setDisabled(False)
 
 
 if __name__ == "__main__":
