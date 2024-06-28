@@ -2,7 +2,7 @@ import sys
 from PIL import Image
 import io
 from PySide6 import QtCore, QtWidgets, QtGui
-#import cnn_to_app as cnn
+import cnn_to_app as cnn
 
 # kolorystyka Aplle (Mac)
 
@@ -153,11 +153,12 @@ QPushButton:active {
     @QtCore.Slot()
     def analyze_image(self):
         self.text.setText("Analyzing image.")
-        dlg = CustomDialog()
+        class_name, score = cnn.classify_image(self.filename)
+        dlg = CustomDialog(class_name)
         if dlg.exec():
             print("Success!")
-        #class_name, score = cnn.classify_image(self.filename)
-        #self.text.setText("{}".format(class_name))
+        
+        self.text.setText("{}".format(class_name))
 
     def browse_files(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, caption="Select Image", dir="C:\\Users\\User\\Desktop\\")

@@ -12,7 +12,7 @@ from image_transformation import apply_fourier_transform, apply_wavelet_transfor
 import models
 
 
-EPOCHS = 100
+EPOCHS = 10
 BATCH_SIZE = 128
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
@@ -22,20 +22,21 @@ MAIN_STYLES_EXCLUSION = []
 SUB_STYLES_EXCLUSION = ["Novelty architecture"]
 
 #Change to False when you want to load and evaluate already trained model
-TRAIN_MODEL = False
+TRAIN_MODEL = True
 
 
 def main():
     # Check command-line arguments
-
+    if len(sys.argv) not in [2, 3]:
+        sys.exit(f"Usage: python {sys.argv[0]} <img-db-folder> [model.weights.h5]")
     # Get image arrays, main labels and sub_labels for all image files
-    images, labels, sub_labels = load_data("D:\Studia\semestr6\ProjektKompetencyjny\ArchitectureStyles\ArchitectureStylesBase")
+    images, labels, sub_labels = load_data(sys.argv[1])
     print(f"Loaded {len(set(labels))} main styles - {len(images)} images")
     print(sub_labels[::10])
     print(sub_labels.__len__)
     # Split data into training and testing sets
     labels_encoder = OneHotEncoder(sparse_output=False)
-    encoded_labels = labels_encoder.fit_transform(np.array(sub_labels).reshape(-1, 1))
+    encoded_labels = labels_encoder.fit_transform(np.array(labels).reshape(-1, 1))
 
     if True:
         x_train, x_test, y_train, y_test = train_test_split(
@@ -43,7 +44,7 @@ def main():
         )
 
     # Get a compiled neural network
-    model = get_model(len(set(sub_labels)))
+    model = get_model(len(set(labels)))
     print(len(sys.argv))
     print(sys.argv[1])
     print(sys.argv[2])
@@ -61,6 +62,7 @@ def main():
         if len(sys.argv) == 3:
             model.save_weights(filename)
             print(f"Model saved to {filename}.")
+            model.evaluate(x_test, y_test, verbose=2)
     else:
         #Load model
         # tu do rysowania
